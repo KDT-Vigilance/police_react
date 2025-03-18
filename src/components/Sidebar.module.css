@@ -1,0 +1,37 @@
+.sidebar {
+  width: 400px;
+  background-color: black;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 20px;
+  background-color: #ffffff;
+  margin: 5px 0;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 24px;
+}
+
+.sidebar li:hover {
+  background-color: #a8dadc;
+  color: black;
+}
+
+.title {
+  color: white;
+  font-size: 48px;
+}
