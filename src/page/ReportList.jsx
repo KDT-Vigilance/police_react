@@ -1,32 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import Sidebar from "../components/Sidebar";
 import VigilanceVideo from "../components/ReportView";
+import { CommonContext } from "../context/CommonContext"; // 📌 Context 가져오기
 
 const ReportList = () => {
   const navigate = useNavigate();
   const [socket, setSocket] = useState(null);
+  const { myReport, setMyReport } = useContext(CommonContext); // 📌 commonContext에서 상태 가져오기
 
   useEffect(() => {
     const userId = localStorage.getItem("_id");
     const tel = localStorage.getItem("tel");
 
-    // 🔹 _id와 tel이 없으면 '/'로 리디렉트
     if (!userId || !tel) {
       navigate("/");
       return;
     }
 
-    // 🔹 소켓 연결
     const newSocket = io("http://localhost:9090", {
       transports: ["websocket"],
-      query: { tel }, // 서버로 tel 정보 전달
+      query: { tel },
     });
 
     setSocket(newSocket);
 
-    // 🔹 소켓 이벤트 리스너 설정
     newSocket.on("connect", () => {
       console.log("🔌 소켓 연결 성공! ID:", newSocket.id);
     });
@@ -35,16 +34,40 @@ const ReportList = () => {
       console.log("📩 서버 메시지:", msg);
     });
 
+    // 🔹 private_report 이벤트 수신 후 my_report 업데이트
+    newSocket.on("private_report", async (data) => {
+      console.log("📥 받은 Report:", data);
+
+      try {
+        const response = await fetch("http://localhost:9090/report/myReport", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ tel }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          setMyReport(result); // 📌 my_report 상태 업데이트
+          console.log("✅ my_report 상태 업데이트 완료:", result);
+        } else {
+          console.error("🚨 my_report 업데이트 실패:", response.statusText);
+        }
+      } catch (error) {
+        console.error("📡 리포트 가져오기 실패:", error);
+      }
+    });
+
     newSocket.on("disconnect", () => {
       console.log("❌ 소켓 연결 끊김");
     });
 
-    // 컴포넌트 언마운트 시 소켓 연결 해제
     return () => {
       newSocket.disconnect();
       console.log("🛑 소켓 연결 해제됨");
     };
-  }, [navigate]);
+  }, [navigate, setMyReport]);
 
   const containerStyle = {
     display: "flex",
@@ -53,9 +76,9 @@ const ReportList = () => {
 
   return (
     <div style={containerStyle}>
-      <Sidebar socket={socket} />{" "}
-      {/* Sidebar에서 소켓 사용 가능하도록 props 전달 */}
-      <VigilanceVideo />
+      <Sidebar socket={socket} />
+      <VigilanceVideo report={myReport} />{" "}
+      {/* 📌 my_report를 VigilanceVideo에 전달 */}
     </div>
   );
 };
