@@ -1,10 +1,45 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import styles from "./ReportView.module.css";
 import { CommonContext } from "../App";
 
 export default function ReportView() {
-  const [status, setStatus] = useState("확인대기");
-  const { selected_report } = useContext(CommonContext); // 🔹 selected_report 가져오기
+  const [status, setStatus] = useState("0"); // 기본값: "확인 대기"
+  const { selected_report, setSelectedReport } = useContext(CommonContext); // 🔹 selected_report & setSelectedReport 가져오기
+
+  // 🔹 status 변경될 때마다 서버에 업데이트 요청
+  useEffect(() => {
+    if (!selected_report) return; // selected_report가 없으면 요청하지 않음
+
+    const updateStatus = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:9090/report/statusUpdate",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              reportId: selected_report._id, // 선택된 리포트 ID
+              status: status, // 변경된 상태 값
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const updatedReport = await response.json(); // 🔹 응답을 JSON으로 변환
+          setSelectedReport(updatedReport); // 🔹 상태 업데이트
+          console.log("✅ 상태 업데이트 성공:", updatedReport);
+        } else {
+          console.error("🚨 상태 업데이트 실패:", response.statusText);
+        }
+      } catch (error) {
+        console.error("📡 상태 업데이트 요청 중 오류 발생:", error);
+      }
+    };
+
+    updateStatus();
+  }, [status, selected_report, setSelectedReport]); // 🔹 status 또는 selected_report가 변경될 때 실행
 
   return (
     <div className={styles.card}>
@@ -27,9 +62,11 @@ export default function ReportView() {
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
-          <option value="확인대기">확인대기</option>
-          <option value="출동중">출동중</option>
-          <option value="조치완료">조치완료</option>
+          <option value="0">확인 대기</option>
+          <option value="1">확인 중</option>
+          <option value="2">출동 중</option>
+          <option value="3">조치 완료</option>
+          <option value="4">이상 무</option>
         </select>
       </div>
     </div>
