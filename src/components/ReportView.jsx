@@ -1,19 +1,27 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import styles from "./ReportView.module.css";
+import { CommonContext } from "../App";
 
-export default function ReportView({ title, videoSrc }) {
+export default function ReportView() {
   const [status, setStatus] = useState("확인대기");
+  const { my_report } = useContext(CommonContext); // 🔹 Context에서 데이터 가져오기
 
   return (
     <div className={styles.card}>
-      <h2 className={styles.title}>{title}</h2>
-      <h2 className={styles.title}>상황 구분 : 폭행</h2>
-      <video className={styles.video} controls>
-        <source src={videoSrc} type="video/mp4" />
-        브라우저가 비디오 태그를 지원하지 않습니다.
-      </video>
+      <h2 className={styles.title}>
+        {my_report?.length > 0 ? my_report[0].title : "리포트 없음"}
+      </h2>
+      <div className={styles.videoContainer}>
+        {my_report?.length > 0 ? (
+          <video className={styles.video} controls>
+            <source src={my_report[0].videoSrc} type="video/mp4" />
+            브라우저가 비디오 태그를 지원하지 않습니다.
+          </video>
+        ) : (
+          <p>📡 비디오 없음</p>
+        )}
+      </div>
       <div className={styles.statusContainer}>
-        {/* <span className={styles.statusLabel}>현재 상태:</span> */}
         <select
           className={styles.select}
           value={status}
