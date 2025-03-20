@@ -3,8 +3,15 @@ import styles from "./ReportView.module.css";
 import { CommonContext } from "../App";
 
 export default function ReportView() {
-  const [status, setStatus] = useState("0"); // 기본값: "확인 대기"
   const { selected_report, setSelectedReport } = useContext(CommonContext); // 🔹 selected_report & setSelectedReport 가져오기
+  const [status, setStatus] = useState("0"); // 기본값: "확인 대기"
+
+  // 🔹 selected_report가 변경될 때 title, videoSrc 자동 업데이트
+  useEffect(() => {
+    if (selected_report) {
+      setStatus(selected_report.status?.toString() || "0"); // 🔹 선택된 신고의 상태값 동기화
+    }
+  }, [selected_report]); // 🔹 selected_report가 변경될 때 실행
 
   // 🔹 status 변경될 때마다 서버에 업데이트 요청
   useEffect(() => {
@@ -39,7 +46,7 @@ export default function ReportView() {
     };
 
     updateStatus();
-  }, [status, selected_report, setSelectedReport]); // 🔹 status 또는 selected_report가 변경될 때 실행
+  }, [status]); // 🔹 status 또는 selected_report가 변경될 때 실행
 
   return (
     <div className={styles.card}>
