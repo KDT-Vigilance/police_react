@@ -1,0 +1,57 @@
+.d-flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-root {
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.font-weight-boldest {
+  font-weight: bold;
+}
+
+.text-danger {
+  color: red;
+}
+
+.text-muted {
+  color: #6c757d;
+}
+
+.btn-light-primary {
+  background-color: #e1f0ff;
+  color: #3699ff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.btn-light-primary:hover {
+  background-color: #cde4ff;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.w-sm-350px {
+  max-width: 350px;
+}
+
+.w-md-600px {
+  max-width: 600px;
+}
+
+.order-1 {
+  order: 1;
+}
+
+.order-lg-2 {
+  order: 2;
+}
