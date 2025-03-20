@@ -4,17 +4,17 @@ import { CommonContext } from "../App";
 
 export default function ReportView() {
   const [status, setStatus] = useState("확인대기");
-  const { my_report } = useContext(CommonContext); // 🔹 Context에서 데이터 가져오기
+  const { selected_report } = useContext(CommonContext); // 🔹 selected_report 가져오기
 
   return (
     <div className={styles.card}>
       <h2 className={styles.title}>
-        {my_report?.length > 0 ? my_report[0].title : "리포트 없음"}
+        {selected_report ? selected_report.title : "리포트 없음"}
       </h2>
       <div className={styles.videoContainer}>
-        {my_report?.length > 0 ? (
+        {selected_report?.videoSrc ? (
           <video className={styles.video} controls>
-            <source src={my_report[0].videoSrc} type="video/mp4" />
+            <source src={selected_report.videoSrc} type="video/mp4" />
             브라우저가 비디오 태그를 지원하지 않습니다.
           </video>
         ) : (
