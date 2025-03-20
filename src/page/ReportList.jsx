@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import Sidebar from "../components/Sidebar";
 import VigilanceVideo from "../components/ReportView";
-import { CommonContext } from "../context/CommonContext"; // 📌 Context 가져오기
+import { CommonContext } from "../App"; // 📌 올바른 파일 경로로 수정
 
 const ReportList = () => {
   const navigate = useNavigate();
