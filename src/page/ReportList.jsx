@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import Sidebar from "../components/Sidebar";
-import VigilanceVideo from "../components/ReportView";
+import ReportView from "../components/ReportView";
 import { CommonContext } from "../App"; // 📌 올바른 파일 경로로 수정
 
 const ReportList = () => {
@@ -77,8 +77,7 @@ const ReportList = () => {
   return (
     <div style={containerStyle}>
       <Sidebar socket={socket} />
-      <VigilanceVideo report={myReport} />{" "}
-      {/* 📌 my_report를 VigilanceVideo에 전달 */}
+      <ReportView /> {/* 📌 my_report를 VigilanceVideo에 전달 */}
     </div>
   );
 };
