@@ -8,6 +8,7 @@ const Sidebar = ({ socket }) => {
   const { my_report, setMyReport, selected_report, setSelectedReport } =
     useContext(CommonContext); // 🔹 Context 사용
   const [activeIndex, setActiveIndex] = useState(null); // 🔹 활성화된 리스트 인덱스
+  const [componentKey, setComponentKey] = useState(0); // 🔹 리렌더링을 강제할 key
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -38,35 +39,40 @@ const Sidebar = ({ socket }) => {
     return () => clearInterval(interval); // 컴포넌트 언마운트 시 인터벌 제거
   }, [setMyReport]);
 
+  // ✅ my_report 변경 시 Sidebar 자체를 리렌더링하도록 강제
+  useEffect(() => {
+    console.log("🔄 Sidebar 리렌더링 트리거 (my_report 변경됨)");
+    setComponentKey((prevKey) => prevKey + 1); // Sidebar 자체가 리렌더링되도록 key 변경
+  }, [my_report]);
+
   const handleLogout = () => {
-    // 🔹 localStorage에서 _id와 tel 삭제
     localStorage.removeItem("_id");
     localStorage.removeItem("tel");
 
-    // 🔹 소켓 연결 해제
     if (socket) {
       socket.disconnect();
       console.log("🔴 소켓 연결 해제됨");
     }
 
-    // 🔹 로그인 페이지로 이동
     navigate("/");
   };
 
   const handleSelectReport = (report, index) => {
-    setSelectedReport(report); // 🔹 선택한 report를 Context에 저장
-    setActiveIndex(index); // 🔹 활성화된 인덱스 설정
+    setSelectedReport(report);
+    setActiveIndex(index);
   };
 
   return (
-    <div className={styles.sidebar}>
+    <div key={componentKey} className={styles.sidebar}>
+      {" "}
+      {/* ✅ key 값 변경으로 리렌더링 */}
       <h2 className={styles.title}>Vigilance</h2>
       <ul>
         {my_report && my_report.length > 0 ? (
           my_report.map((report, index) => (
             <li
               key={index}
-              className={index === activeIndex ? styles.active : ""} // 🔹 활성화된 항목 스타일 적용
+              className={index === activeIndex ? styles.active : ""}
               onClick={() => handleSelectReport(report, index)}
             >
               {report.content}
