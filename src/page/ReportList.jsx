@@ -36,7 +36,7 @@ const ReportList = () => {
 
     // 🔹 private_report 이벤트 수신 후 my_report 업데이트
     newSocket.on("private_report", async (data) => {
-      console.log("📥 받은 Report:", data);
+      alert("📥 받은 private_report:", data);
 
       try {
         const response = await fetch("http://localhost:9090/report/myReport", {
