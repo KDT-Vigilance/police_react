@@ -49,7 +49,8 @@ const ReportList = () => {
 
         if (response.ok) {
           const result = await response.json();
-          setMyReport(result); // 📌 my_report 상태 업데이트
+          alert("🚨새로운 신고가 들어왔습니다!");
+          setMyReport(result.data); // 📌 my_report 상태 업데이트
           console.log("✅ my_report 상태 업데이트 완료:", result);
         } else {
           console.error("🚨 my_report 업데이트 실패:", response.statusText);

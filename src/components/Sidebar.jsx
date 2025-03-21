@@ -5,10 +5,12 @@ import { CommonContext } from "../App";
 
 const Sidebar = ({ socket }) => {
   const navigate = useNavigate();
-  const { my_report, setMyReport, selected_report, setSelectedReport } =
+  const { myReport, setMyReport, selected_report, setSelectedReport } =
     useContext(CommonContext); // 🔹 Context 사용
   const [activeIndex, setActiveIndex] = useState(null); // 🔹 활성화된 리스트 인덱스
+  const [isLoading, setIsLoading] = useState(true); // 🔹 최초 로딩 상태 관리
 
+  // ✅ 최초 랜더링 시 한 번만 fetch 요청 실행
   useEffect(() => {
     const fetchReports = async () => {
       const tel = localStorage.getItem("tel");
@@ -24,58 +26,73 @@ const Sidebar = ({ socket }) => {
         });
 
         if (response.ok) {
-          const data = await response.json();
-          setMyReport(data); // 🔹 받아온 데이터를 my_report 상태에 저장
+          const result = await response.json();
+          setMyReport(result.data); // 📌 myReport 상태 업데이트
+          console.log("✅ 최초 로드된 myReport:", result.data);
+        } else {
+          console.error("🚨 myReport 업데이트 실패:", response.statusText);
         }
       } catch (error) {
         console.error("📡 리포트 가져오기 실패:", error);
+      } finally {
+        setIsLoading(false); // 🔹 로딩 완료 후 상태 업데이트
       }
     };
 
-    fetchReports(); // 최초 실행
-    const interval = setInterval(fetchReports, 2000); // 🔹 2초마다 리포트 갱신
-
-    return () => clearInterval(interval); // 컴포넌트 언마운트 시 인터벌 제거
-  }, [setMyReport]);
+    fetchReports(); // 🔹 최초 실행
+  }, [setMyReport]); // ✅ 최초 한 번만 실행
 
   const handleLogout = () => {
-    // 🔹 localStorage에서 _id와 tel 삭제
     localStorage.removeItem("_id");
     localStorage.removeItem("tel");
 
-    // 🔹 소켓 연결 해제
     if (socket) {
       socket.disconnect();
       console.log("🔴 소켓 연결 해제됨");
     }
 
-    // 🔹 로그인 페이지로 이동
     navigate("/");
   };
 
   const handleSelectReport = (report, index) => {
-    setSelectedReport(report); // 🔹 선택한 report를 Context에 저장
-    setActiveIndex(index); // 🔹 활성화된 인덱스 설정
+    setSelectedReport(report);
+    setActiveIndex(index);
   };
 
   return (
     <div className={styles.sidebar}>
       <h2 className={styles.title}>Vigilance</h2>
-      <ul>
-        {my_report && my_report.length > 0 ? (
-          my_report.map((report, index) => (
-            <li
-              key={index}
-              className={index === activeIndex ? styles.active : ""} // 🔹 활성화된 항목 스타일 적용
-              onClick={() => handleSelectReport(report, index)}
-            >
-              {report.content}
-            </li>
-          ))
-        ) : (
-          <li>📡 리포트 없음</li>
-        )}
-      </ul>
+
+      {isLoading ? ( // ✅ 로딩 중이면 표시
+        <ul>
+          <li className={styles.sidebar_li}>⏳ 리포트 불러오는 중...</li>
+        </ul>
+      ) : (
+        <ul>
+          {myReport && myReport.length > 0 ? (
+            myReport.map((report, index) => {
+              const formattedDate = report.createdAt
+                ? new Date(report.createdAt).toISOString().split("T")[0]
+                : "날짜 없음";
+              return (
+                <li
+                  key={index}
+                  className={`${styles.sidebar_li} ${
+                    index === activeIndex ? styles.active : ""
+                  }`}
+                  onClick={() => handleSelectReport(report, index)}
+                >
+                  📅 {formattedDate} | 📷{" "}
+                  {report.cam_name || "카메라 이름 없음"}
+                </li>
+              );
+            })
+          ) : (
+            <li className={styles.sidebar_li}>📡 리포트 없음</li>
+          )}
+        </ul>
+      )}
+
       <button onClick={handleLogout} className={styles.logoutButton}>
         로그아웃
       </button>

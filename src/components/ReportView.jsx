@@ -9,6 +9,7 @@ export default function ReportView() {
   // 🔹 selected_report가 변경될 때 title, videoSrc 자동 업데이트
   useEffect(() => {
     if (selected_report) {
+      console.log("🔄 선택된 리포트 변경됨:", selected_report);
       setStatus(selected_report.status?.toString() || "0"); // 🔹 선택된 신고의 상태값 동기화
     }
   }, [selected_report]); // 🔹 selected_report가 변경될 때 실행
