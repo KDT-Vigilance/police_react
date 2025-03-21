@@ -5,7 +5,7 @@ import { CommonContext } from "../App";
 
 const Sidebar = ({ socket }) => {
   const navigate = useNavigate();
-  const { myReport, setMyReport, selected_report, setSelectedReport } =
+  const { myReport, setMyReport, selectedReport, setSelectedReport } =
     useContext(CommonContext); // 🔹 Context 사용
   const [activeIndex, setActiveIndex] = useState(null); // 🔹 활성화된 리스트 인덱스
   const [isLoading, setIsLoading] = useState(true); // 🔹 최초 로딩 상태 관리

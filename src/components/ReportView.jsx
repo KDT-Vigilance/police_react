@@ -3,20 +3,20 @@ import styles from "./ReportView.module.css";
 import { CommonContext } from "../App";
 
 export default function ReportView() {
-  const { selected_report, setSelectedReport } = useContext(CommonContext); // 🔹 selected_report & setSelectedReport 가져오기
+  const { selectedReport, setSelectedReport } = useContext(CommonContext); // 🔹 selectedReport & setSelectedReport 가져오기
   const [status, setStatus] = useState("0"); // 기본값: "확인 대기"
 
-  // 🔹 selected_report가 변경될 때 title, videoSrc 자동 업데이트
+  // 🔹 selectedReport가 변경될 때 title, videoSrc 자동 업데이트
   useEffect(() => {
-    if (selected_report) {
-      console.log("🔄 선택된 리포트 변경됨:", selected_report);
-      setStatus(selected_report.status?.toString() || "0"); // 🔹 선택된 신고의 상태값 동기화
+    if (selectedReport) {
+      console.log("🔄 선택된 리포트 변경됨:", selectedReport);
+      setStatus(selectedReport.status?.toString() || "0"); // 🔹 선택된 신고의 상태값 동기화
     }
-  }, [selected_report]); // 🔹 selected_report가 변경될 때 실행
+  }, [selectedReport]); // 🔹 selectedReport가 변경될 때 실행
 
   // 🔹 status 변경될 때마다 서버에 업데이트 요청
   useEffect(() => {
-    if (!selected_report) return; // selected_report가 없으면 요청하지 않음
+    if (!selectedReport) return; // selectedReport가 없으면 요청하지 않음
 
     const updateStatus = async () => {
       try {
@@ -28,7 +28,7 @@ export default function ReportView() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              reportId: selected_report._id, // 선택된 리포트 ID
+              reportId: selectedReport._id, // 선택된 리포트 ID
               status: status, // 변경된 상태 값
             }),
           }
@@ -47,17 +47,17 @@ export default function ReportView() {
     };
 
     updateStatus();
-  }, [status]); // 🔹 status 또는 selected_report가 변경될 때 실행
+  }, [status]); // 🔹 status 또는 selectedReport가 변경될 때 실행
 
   return (
     <div className={styles.card}>
       <h2 className={styles.title}>
-        {selected_report ? selected_report.title : "리포트 없음"}
+        {selectedReport ? selectedReport.cam_name : "리포트 없음"}
       </h2>
       <div className={styles.videoContainer}>
-        {selected_report?.videoSrc ? (
+        {selectedReport?.video_url ? (
           <video className={styles.video} controls>
-            <source src={selected_report.videoSrc} type="video/mp4" />
+            <source src={selectedReport.video_url} type="video/mp4" />
             브라우저가 비디오 태그를 지원하지 않습니다.
           </video>
         ) : (
